@@ -201,14 +201,20 @@ st.markdown("""
     
     /* 余白調整 */
     .block-container {
-        border: 2px solid #ffffff !important;
-        border-radius: 0 !important;
         padding: 2rem !important;
-        margin-top: 2rem !important;
-        background-color: #000000 !important;
-        box-shadow: inset 0 0 15px #333333 !important;
+        margin-top: 1rem !important;
+        background-color: #050505 !important;
         max-width: 800px !important;
     }
+    
+    /* Streamlit Community Cloud 等で付与されるiframeやデコレーション枠の非表示化 */
+    iframe {
+        border: none !important;
+    }
+    .stApp {
+        border: none !important;
+    }
+
     
     /* セレクトボックスの文字切れ対策（内部要素の高さを確保） */
     div[data-baseweb="select"] > div {
@@ -262,6 +268,28 @@ st.markdown("""
     hr {
         border-top: 1px dashed #ffffff;
     }
+    
+    /* ファミコン風（ドラクエ風）の暗転・場面切り替えアニメーション */
+    .retro-flash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000000;
+        z-index: 999999;
+        pointer-events: none;
+        animation: dq-stairs 0.6s steps(6, end) forwards;
+    }
+    @keyframes dq-stairs {
+        0% { opacity: 1; }
+        25% { opacity: 1; }
+        40% { opacity: 0.8; }
+        55% { opacity: 0.6; }
+        70% { opacity: 0.4; }
+        85% { opacity: 0.2; }
+        100% { opacity: 0; visibility: hidden; }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -294,6 +322,10 @@ def to_step_5():
 
 def reset_step():
     st.session_state.step = 0
+
+# --- 場面切り替えアニメーション（Stepが変わるたびにIDが変わり再発火する） ---
+st.markdown(f'<div class="retro-flash" id="flash_step_{st.session_state.step}"></div>', unsafe_allow_html=True)
+
 
 
 # --- ステップ表示 ------------------------------------------------------------
@@ -573,26 +605,26 @@ elif st.session_state.step == 5:
     st.markdown("<h2 style='color: #ffcc00 !important;'>📜 あとがき：現実世界への帰還</h2>", unsafe_allow_html=True)
     
     st.markdown('''
-    ここまで遊んでいただき、ありがとうございます！  
-    このアプリは、以下の検証記事のデータを元に、**「あなたにとって本当に必要なAI環境のコスト」**をシミュレーションするためのツールです。
-    
-    > **【出典記事】**  
-    > **[月1,400円のAPIに、100万円のPCは勝てるか？ Sonnet級オープンモデルを自宅で動かす本当のコスト](https://x.com/poporacchi/article/2118836220403040753)**
-    
-    ### 📊 現状のローカルAI事情（2026年秋）
-    * **モデルの巨大化**: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
-    * **メモリ価格の高騰**: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
-    * **Macの台頭**: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。
-    
-    ### ⚙️ 試算のカスタマイズについて
-    AIハードウェアの価格や為替は日々変動します。  
-    もしご自身で最新の相場に合わせて計算し直したい場合は、プログラム（`app.py`）の冒頭にある以下の数値を書き換えるだけで、すべての計算が自動で更新されます。
-    * `EXCHANGE_RATE`（為替レート）
-    * `RAM_128GB_NOW`（DDR5メモリの価格）
-    * `MACHINES`（各PCの本体価格や生成速度）
-    
-    それでは、良きAIライフ（冒険）を！
-    ''')
+ここまで遊んでいただき、ありがとうございます！  
+このアプリは、以下の検証記事のデータを元に、**「あなたにとって本当に必要なAI環境のコスト」**をシミュレーションするためのツールです。
+
+> **【出典記事】**  
+> **[月1,400円のAPIに、100万円のPCは勝てるか？ Sonnet級オープンモデルを自宅で動かす本当のコスト](https://x.com/poporacchi/article/2118836220403040753)**
+
+### 📊 現状のローカルAI事情（2026年秋）
+* **モデルの巨大化**: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
+* **メモリ価格の高騰**: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
+* **Macの台頭**: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。
+
+### ⚙️ 試算のカスタマイズについて
+AIハードウェアの価格や為替は日々変動します。  
+もしご自身で最新の相場に合わせて計算し直したい場合は、プログラム（`app.py`）の冒頭にある以下の数値を書き換えるだけで、すべての計算が自動で更新されます。
+* `EXCHANGE_RATE`（為替レート）
+* `RAM_128GB_NOW`（DDR5メモリの価格）
+* `MACHINES`（各PCの本体価格や生成速度）
+
+それでは、良きAIライフ（冒険）を！
+''')
     
     st.markdown("---")
     st.button("＞ もう一度冒険に出る", on_click=reset_step)
