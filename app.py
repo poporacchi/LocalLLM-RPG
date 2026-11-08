@@ -269,25 +269,21 @@ st.markdown("""
         border-top: 1px dashed #ffffff;
     }
     
-    /* ファミコン風（ドラクエ風）の暗転・場面切り替えアニメーション */
+    /* 画面切り替え時の暗転フェードイン */
     .retro-flash {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
+        right: 0;
+        bottom: 0;
         background-color: #000000;
-        z-index: 999999;
+        z-index: 9999999;
         pointer-events: none;
-        animation: dq-stairs 0.6s steps(6, end) forwards;
+        animation: fade-in-black 0.6s ease-out forwards;
     }
-    @keyframes dq-stairs {
+    @keyframes fade-in-black {
         0% { opacity: 1; }
-        25% { opacity: 1; }
-        40% { opacity: 0.8; }
-        55% { opacity: 0.6; }
-        70% { opacity: 0.4; }
-        85% { opacity: 0.2; }
+        40% { opacity: 1; }
         100% { opacity: 0; visibility: hidden; }
     }
     </style>
@@ -606,22 +602,22 @@ elif st.session_state.step == 5:
     
     st.markdown('''
 ここまで遊んでいただき、ありがとうございます！  
-このアプリは、以下の検証記事のデータを元に、**「あなたにとって本当に必要なAI環境のコスト」**をシミュレーションするためのツールです。
+このアプリは、以下の検証記事のデータを元に、<b style='color:#ffcc00;'>「あなたにとって本当に必要なAI環境のコスト」</b>をシミュレーションするためのツールです。
 
 > **【出典記事】**  
 > **[月1,400円のAPIに、100万円のPCは勝てるか？ Sonnet級オープンモデルを自宅で動かす本当のコスト](https://x.com/poporacchi/article/2118836220403040753)**
 
 ### 📊 現状のローカルAI事情（2026年秋）
-* **モデルの巨大化**: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
-* **メモリ価格の高騰**: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
-* **Macの台頭**: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。
+<ul><li><b style='color:#ffcc00;'>モデルの巨大化</b>: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
+</li><li><b style='color:#ffcc00;'>メモリ価格の高騰</b>: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
+</li><li><b style='color:#ffcc00;'>Macの台頭</b>: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。</li></ul>
 
 ### ⚙️ 試算のカスタマイズについて
 AIハードウェアの価格や為替は日々変動します。  
 もしご自身で最新の相場に合わせて計算し直したい場合は、プログラム（`app.py`）の冒頭にある以下の数値を書き換えるだけで、すべての計算が自動で更新されます。
-* `EXCHANGE_RATE`（為替レート）
-* `RAM_128GB_NOW`（DDR5メモリの価格）
-* `MACHINES`（各PCの本体価格や生成速度）
+<ul><li><code>EXCHANGE_RATE</code>（為替レート）
+</li><li><code>RAM_128GB_NOW</code>（DDR5メモリの価格）
+</li><li><code>MACHINES</code>（各PCの本体価格や生成速度）</li></ul>
 
 それでは、良きAIライフ（冒険）を！
 ''')
