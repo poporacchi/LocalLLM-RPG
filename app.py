@@ -608,19 +608,19 @@ elif st.session_state.step == 5:
 > **[月1,400円のAPIに、100万円のPCは勝てるか？ Sonnet級オープンモデルを自宅で動かす本当のコスト](https://x.com/poporacchi/article/2118836220403040753)**
 
 ### 📊 現状のローカルAI事情（2026年秋）
-<ul><li><b style='color:#ffcc00;'>モデルの巨大化</b>: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
-</li><li><b style='color:#ffcc00;'>メモリ価格の高騰</b>: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
-</li><li><b style='color:#ffcc00;'>Macの台頭</b>: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。</li></ul>
+- <b style='color:#ffcc00;'>モデルの巨大化</b>: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
+- <b style='color:#ffcc00;'>メモリ価格の高騰</b>: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
+- <b style='color:#ffcc00;'>Macの台頭</b>: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。
 
 ### ⚙️ 試算のカスタマイズについて
-AIハードウェアの価格や為替は日々変動します。  
+AIハードウェアの価格や為替は日々変動します。
 もしご自身で最新の相場に合わせて計算し直したい場合は、プログラム（`app.py`）の冒頭にある以下の数値を書き換えるだけで、すべての計算が自動で更新されます。
-<ul><li><code>EXCHANGE_RATE</code>（為替レート）
-</li><li><code>RAM_128GB_NOW</code>（DDR5メモリの価格）
-</li><li><code>MACHINES</code>（各PCの本体価格や生成速度）</li></ul>
+- `EXCHANGE_RATE`（為替レート）
+- `RAM_128GB_NOW`（DDR5メモリの価格）
+- `MACHINES`（各PCの本体価格や生成速度）
 
 それでは、良きAIライフ（冒険）を！
-''')
+''', unsafe_allow_html=True)
     
     st.markdown("---")
     st.button("＞ もう一度冒険に出る", on_click=reset_step)
