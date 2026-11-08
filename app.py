@@ -289,6 +289,9 @@ def to_step_4():
     st.session_state.saved_ram = st.session_state.q6_ram
     st.session_state.step = 4
 
+def to_step_5():
+    st.session_state.step = 5
+
 def reset_step():
     st.session_state.step = 0
 
@@ -562,5 +565,35 @@ elif st.session_state.step == 4:
         st.markdown("> *もし元を取れる気がしないなら、クラウドのままでも構わない。*  \n> *エピローグはあなたの使い方次第だ。*")
 
 
+    st.button("＞ 冒険の記録（あとがき）を読む", on_click=to_step_5)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+elif st.session_state.step == 5:
+    st.markdown('<div class="retro-box">', unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #ffcc00 !important;'>📜 あとがき：現実世界への帰還</h2>", unsafe_allow_html=True)
+    
+    st.markdown('''
+    ここまで遊んでいただき、ありがとうございます！  
+    このアプリは、以下の検証記事のデータを元に、**「あなたにとって本当に必要なAI環境のコスト」**をシミュレーションするためのツールです。
+    
+    > **【出典記事】**  
+    > **[月1,400円のAPIに、100万円のPCは勝てるか？ Sonnet級オープンモデルを自宅で動かす本当のコスト](https://x.com/poporacchi/article/2118836220403040753)**
+    
+    ### 📊 現状のローカルAI事情（2026年秋）
+    * **モデルの巨大化**: GLM-5.3-FlashやDeepSeek V4.1など、非常に優秀なオープンモデルが登場していますが、それに伴い必要なメモリ容量も100GB〜250GB級へと跳ね上がっています。
+    * **メモリ価格の高騰**: DDR5大容量キットの価格が1年で8倍以上に高騰したことで、NVIDIA GPUを用いた自作PCのコストパフォーマンスが大きく悪化しました。
+    * **Macの台頭**: メモリ帯域と大容量ユニファイドメモリを兼ね備えた **Mac Studio** が、巨大なモデルを動かす上での「コスパ最強マシン」として注目を集めています。
+    
+    ### ⚙️ 試算のカスタマイズについて
+    AIハードウェアの価格や為替は日々変動します。  
+    もしご自身で最新の相場に合わせて計算し直したい場合は、プログラム（`app.py`）の冒頭にある以下の数値を書き換えるだけで、すべての計算が自動で更新されます。
+    * `EXCHANGE_RATE`（為替レート）
+    * `RAM_128GB_NOW`（DDR5メモリの価格）
+    * `MACHINES`（各PCの本体価格や生成速度）
+    
+    それでは、良きAIライフ（冒険）を！
+    ''')
+    
+    st.markdown("---")
     st.button("＞ もう一度冒険に出る", on_click=reset_step)
     
