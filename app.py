@@ -269,7 +269,7 @@ st.markdown("""
         border-top: 1px dashed #ffffff;
     }
     
-    /* 画面切り替え時のファミコンRPG風エフェクト（点滅 → 渦巻き状にブロックが消える） */
+    /* 画面切り替え時のファミコンRPG風エフェクト（渦巻き状にブロックが消える） */
     .dq-fx {
         position: fixed;
         inset: 0;
@@ -284,17 +284,8 @@ st.markdown("""
         animation-duration: 1ms;
         animation-fill-mode: forwards;
     }
-    .dq-flash {
-        position: fixed;
-        inset: 0;
-        z-index: 10000000;
-        pointer-events: none;
-        animation-duration: 0.36s;
-        animation-timing-function: step-end;
-        animation-fill-mode: forwards;
-    }
     @media (prefers-reduced-motion: reduce) {
-        .dq-fx, .dq-flash { display: none !important; }
+        .dq-fx { display: none !important; }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -330,10 +321,11 @@ def reset_step():
     st.session_state.step = 0
 
 # --- 場面切り替えアニメーション ----------------------------------------------
-FX_COLS = 12
-FX_ROWS = 8
-FX_FLASH_MS = 360
-FX_TILE_INTERVAL_MS = 7
+FX_COLS = 32
+FX_ROWS = 18
+FX_TILE_INTERVAL_MS = 1.5
+# 結末（4）とあとがき（5）は遷移アニメーションを出さない
+FX_SKIP_STEPS = {4, 5}
 
 
 def spiral_order(cols: int, rows: int) -> list[tuple[int, int]]:
@@ -352,7 +344,7 @@ def spiral_order(cols: int, rows: int) -> list[tuple[int, int]]:
 
 
 def render_transition(step: int) -> None:
-    """ファミコンRPG風の場面転換（白黒点滅 → 中心から渦巻き状に黒ブロックが消える）を描画する。
+    """ファミコンRPG風の場面転換（中心から渦巻き状に黒ブロックが消える）を描画する。
 
     Streamlit は同じ位置の要素を使い回すため、id を変えるだけではアニメーションが
     再生されないことがある。ステップごとに keyframes 名を変えて確実に再生させる。
@@ -360,30 +352,28 @@ def render_transition(step: int) -> None:
     """
     reveal_order = list(reversed(spiral_order(FX_COLS, FX_ROWS)))
     delays = {
-        cell: FX_FLASH_MS + i * FX_TILE_INTERVAL_MS
+        cell: round(i * FX_TILE_INTERVAL_MS, 1)
         for i, cell in enumerate(reveal_order)
     }
+    # マス数が多いので、共通の animation-name はクラス側に寄せて HTML を軽くする
     tiles = "".join(
-        f'<div class="dq-tile" style="animation-name:dq-tile-{step};animation-delay:{delays[(c, r)]}ms"></div>'
+        f'<div class="dq-tile" style="animation-delay:{delays[(c, r)]}ms"></div>'
         for r in range(FX_ROWS)
         for c in range(FX_COLS)
     )
     keyframes = (
         f"@keyframes dq-tile-{step}{{to{{visibility:hidden}}}}"
-        f"@keyframes dq-flash-{step}{{"
-        "0%{background:#fff}20%{background:transparent}"
-        "40%{background:#fff}60%{background:transparent}"
-        "100%{background:transparent;visibility:hidden}}"
+        f".dq-tile{{animation-name:dq-tile-{step}}}"
     )
     st.markdown(
         f"<style>{keyframes}</style>"
-        f'<div class="dq-flash" style="animation-name:dq-flash-{step}"></div>'
         f'<div class="dq-fx" style="--dq-cols:{FX_COLS};--dq-rows:{FX_ROWS}">{tiles}</div>',
         unsafe_allow_html=True,
     )
 
 
-render_transition(st.session_state.step)
+if st.session_state.step not in FX_SKIP_STEPS:
+    render_transition(st.session_state.step)
 
 
 
