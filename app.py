@@ -269,22 +269,32 @@ st.markdown("""
         border-top: 1px dashed #ffffff;
     }
     
-    /* 画面切り替え時の暗転フェードイン */
-    .retro-flash {
+    /* 画面切り替え時のファミコンRPG風エフェクト（点滅 → 渦巻き状にブロックが消える） */
+    .dq-fx {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #000000;
+        inset: 0;
         z-index: 9999999;
         pointer-events: none;
-        animation: fade-in-black 0.6s ease-out forwards;
+        display: grid;
+        grid-template-columns: repeat(var(--dq-cols), 1fr);
+        grid-template-rows: repeat(var(--dq-rows), 1fr);
     }
-    @keyframes fade-in-black {
-        0% { opacity: 1; }
-        40% { opacity: 1; }
-        100% { opacity: 0; visibility: hidden; }
+    .dq-tile {
+        background-color: #000000;
+        animation-duration: 1ms;
+        animation-fill-mode: forwards;
+    }
+    .dq-flash {
+        position: fixed;
+        inset: 0;
+        z-index: 10000000;
+        pointer-events: none;
+        animation-duration: 0.36s;
+        animation-timing-function: step-end;
+        animation-fill-mode: forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .dq-fx, .dq-flash { display: none !important; }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -319,8 +329,61 @@ def to_step_5():
 def reset_step():
     st.session_state.step = 0
 
-# --- 場面切り替えアニメーション（Stepが変わるたびにIDが変わり再発火する） ---
-st.markdown(f'<div class="retro-flash" id="flash_step_{st.session_state.step}"></div>', unsafe_allow_html=True)
+# --- 場面切り替えアニメーション ----------------------------------------------
+FX_COLS = 12
+FX_ROWS = 8
+FX_FLASH_MS = 360
+FX_TILE_INTERVAL_MS = 7
+
+
+def spiral_order(cols: int, rows: int) -> list[tuple[int, int]]:
+    """外周から中心へ時計回りに巡る (col, row) の順序を返す。"""
+    order: list[tuple[int, int]] = []
+    left, right, top, bottom = 0, cols - 1, 0, rows - 1
+    while left <= right and top <= bottom:
+        order += [(c, top) for c in range(left, right + 1)]
+        order += [(right, r) for r in range(top + 1, bottom + 1)]
+        if top < bottom:
+            order += [(c, bottom) for c in range(right - 1, left - 1, -1)]
+        if left < right:
+            order += [(left, r) for r in range(bottom - 1, top, -1)]
+        left, right, top, bottom = left + 1, right - 1, top + 1, bottom - 1
+    return order
+
+
+def render_transition(step: int) -> None:
+    """ファミコンRPG風の場面転換（白黒点滅 → 中心から渦巻き状に黒ブロックが消える）を描画する。
+
+    Streamlit は同じ位置の要素を使い回すため、id を変えるだけではアニメーションが
+    再生されないことがある。ステップごとに keyframes 名を変えて確実に再生させる。
+    st.markdown では <script> が実行されないため CSS のみで実装している。
+    """
+    reveal_order = list(reversed(spiral_order(FX_COLS, FX_ROWS)))
+    delays = {
+        cell: FX_FLASH_MS + i * FX_TILE_INTERVAL_MS
+        for i, cell in enumerate(reveal_order)
+    }
+    tiles = "".join(
+        f'<div class="dq-tile" style="animation-name:dq-tile-{step};animation-delay:{delays[(c, r)]}ms"></div>'
+        for r in range(FX_ROWS)
+        for c in range(FX_COLS)
+    )
+    keyframes = (
+        f"@keyframes dq-tile-{step}{{to{{visibility:hidden}}}}"
+        f"@keyframes dq-flash-{step}{{"
+        "0%{background:#fff}20%{background:transparent}"
+        "40%{background:#fff}60%{background:transparent}"
+        "100%{background:transparent;visibility:hidden}}"
+    )
+    st.markdown(
+        f"<style>{keyframes}</style>"
+        f'<div class="dq-flash" style="animation-name:dq-flash-{step}"></div>'
+        f'<div class="dq-fx" style="--dq-cols:{FX_COLS};--dq-rows:{FX_ROWS}">{tiles}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+render_transition(st.session_state.step)
 
 
 
