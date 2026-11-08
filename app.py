@@ -499,6 +499,7 @@ elif st.session_state.step == 4:
         st.subheader("⏳ 3年間の総コストと損益分岐")
         
         # 3年間の総コスト計算（初期費用 ＋ 月額維持費×36ヶ月）
+        sonnet = usage.cloud["sonnet"]
         total_3y_local = price + (electricity * DEPRECIATE_MONTHS)
         total_3y_cloud_sonnet = sonnet * DEPRECIATE_MONTHS
         total_3y_cloud_glm = glm_cloud * DEPRECIATE_MONTHS
@@ -520,7 +521,6 @@ elif st.session_state.step == 4:
         </div>
         ''', unsafe_allow_html=True)
 
-        sonnet = usage.cloud["sonnet"]
         be_sonnet = break_even_months(price, local_monthly, sonnet)
         be_max20x = break_even_months(price, local_monthly, 31_000)
 
